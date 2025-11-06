@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Clone</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="server-list">
+                <div class="server-icon active" id="homeServer">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+                        <path d="M2 17L12 22L22 17V12L12 17L2 12V17Z"/>
+                    </svg>
+                </div>
+                <div class="server-icon" id="addServer">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Channels Panel -->
+        <div class="channels-panel">
+            <div class="channels-header">
+                <h2 id="serverName">Главный сервер</h2>
+                <button class="user-menu-btn" id="userMenuBtn">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <span id="userName">Пользователь</span>
+                </button>
+            </div>
+            <div class="channels-list" id="channelsList">
+                <div class="channel-category">ТЕКСТОВЫЕ КАНАЛЫ</div>
+                <div class="channel-item active" data-channel="general">
+                    <span>#</span> general
+                </div>
+            </div>
+            <div class="online-users" id="onlineUsers">
+                <div class="online-header">
+                    ОНЛАЙН — <span id="onlineCount">0</span>
+                    <button class="add-friend-btn" id="addFriendBtn" title="➕ Добавить друга - Нажмите для поиска и добавления друзей">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="help-text-small" style="padding: 8px; font-size: 11px; color: #72767d; border-bottom: 1px solid #202225;">
+                    💡 <strong>Подсказки:</strong><br>
+                    • Нажмите "+" для добавления друзей<br>
+                    • Нажмите "Друзья" в списке для просмотра<br>
+                    • Кликните на пользователя для звонка
+                </div>
+                <div id="usersList"></div>
+            </div>
+            <div class="friends-section" id="friendsSection" style="display: none;">
+                <div class="friends-header">
+                    <span>ДРУЗЬЯ</span>
+                    <button class="close-friends-btn" id="closeFriendsBtn">✕</button>
+                </div>
+                <div class="friends-tabs">
+                    <button class="friend-tab active" data-tab="friends">Друзья</button>
+                    <button class="friend-tab" data-tab="pending">Запросы</button>
+                </div>
+                <div class="friends-content">
+                    <div class="friends-tab-content active" id="friendsTab">
+                        <div id="friendsList"></div>
+                    </div>
+                    <div class="friends-tab-content" id="pendingTab">
+                        <div id="pendingRequestsList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="chat-area">
+            <div class="chat-header">
+                <div class="channel-info">
+                    <span class="channel-hash">#</span>
+                    <span id="currentChannel">general</span>
+                </div>
+                <div class="chat-actions">
+                    <button class="action-btn" id="voiceCallBtn" title="📞 Голосовой звонок - Нажмите для начала звонка">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                        </svg>
+                    </button>
+                    <button class="action-btn" id="videoCallBtn" title="📹 Видео звонок - Нажмите для видео звонка">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                        </svg>
+                    </button>
+                    <button class="action-btn" id="screenShareBtn" title="🖥️ Показать экран - Работает во время звонка">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h4v2H4c-1.1 0-2 .9-2 2s.9 2 2 2h16c1.1 0 2-.9 2-2s-.9-2-2-2h-2v-2h2zM14 13h-3v3H9v-3H6v-2h3V8h2v3h3v2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="messages-container" id="messagesContainer">
+                <div class="messages-list" id="messagesList">
+                    <!-- Messages will be added here -->
+                </div>
+            </div>
+
+            <div class="message-input-container">
+                <div class="help-tooltip" style="margin-bottom: 8px; padding: 8px 12px; background: #2f3136; border-radius: 4px; font-size: 12px; color: #b9bbbe;">
+                    💬 <strong style="color: #fff;">Отправка сообщений:</strong> Введите текст и нажмите Enter или кнопку отправки
+                </div>
+                <form id="messageForm" class="message-form">
+                    <input type="text" id="messageInput" placeholder="Написать сообщение в #general (Enter для отправки)" autocomplete="off">
+                    <button type="submit" class="send-btn" title="Отправить сообщение">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Call Modal -->
+        <div class="call-modal" id="callModal" style="display: none;">
+            <div class="call-content">
+                <div class="call-header">
+                    <h3 id="callTitle">Звонок</h3>
+                    <button class="close-btn" id="endCallBtn">✕</button>
+                </div>
+                <div class="call-video-container">
+                    <video id="localVideo" autoplay muted playsinline></video>
+                    <video id="remoteVideo" autoplay playsinline></video>
+                </div>
+                <div class="call-controls">
+                    <button class="call-control-btn" id="muteBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38.31 2.63.95 3.69 1.81L19 19.73 20.73 18l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+                        </svg>
+                    </button>
+                    <button class="call-control-btn" id="videoBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                        </svg>
+                    </button>
+                    <button class="call-control-btn end-call" id="hangupBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.69.28-.26 0-.51-.1-.69-.28L.28 13.82c-.18-.17-.28-.42-.28-.69 0-.26.1-.51.28-.69C3.34 9.78 7.46 8 12 8s8.66 1.78 11.72 4.44c.18.18.28.43.28.69 0 .26-.1.51-.28.69l-2.12 2.12c-.18.18-.43.28-.69.28-.26 0-.51-.1-.69-.28-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Friend Modal -->
+    <div class="modal" id="addFriendModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Добавить друга</h3>
+                <button class="close-btn" id="closeAddFriendModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-text" style="margin-bottom: 12px; padding: 10px; background: #2f3136; border-radius: 4px; font-size: 12px; color: #b9bbbe;">
+                    <strong style="color: #fff;">📝 Как добавить друга:</strong><br>
+                    1. Введите username пользователя в поле поиска<br>
+                    2. Нажмите "Добавить" рядом с нужным пользователем<br>
+                    3. Пользователь получит запрос в друзья
+                </div>
+                <div class="search-users">
+                    <input type="text" id="searchUserInput" placeholder="Введите username для поиска (минимум 2 символа)..." autocomplete="off">
+                    <div id="searchResults"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Автоматическое определение окружения
+        (function() {
+            const hostname = window.location.hostname;
+            const isGitHubPages = hostname.includes('github.io') || hostname.includes('github.com');
+            const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+            
+            // Если не указан явно API_BASE_URL, определяем автоматически
+            if (!window.API_BASE_URL) {
+                if (isGitHubPages) {
+                    // Для GitHub Pages - используем тот же домен (если бэкенд на том же сервере)
+                    // Или укажите явно: window.API_BASE_URL = 'https://your-backend-url.com';
+                    window.API_BASE_URL = window.location.origin;
+                } else if (isLocalhost) {
+                    // Для локальной разработки
+                    window.API_BASE_URL = 'http://localhost:3000';
+                } else {
+                    // Для других доменов - используем текущий домен
+                    window.API_BASE_URL = window.location.origin;
+                }
+            }
+            
+            // Подключение Socket.IO
+            const API_BASE_URL = window.API_BASE_URL || window.location.origin;
+            const socketScript = document.createElement('script');
+            socketScript.src = `${API_BASE_URL}/socket.io/socket.io.js`;
+            socketScript.onerror = () => {
+                console.error('Не удалось загрузить Socket.IO. Убедитесь, что сервер запущен.');
+                // Пробуем альтернативный путь
+                const altScript = document.createElement('script');
+                altScript.src = '/socket.io/socket.io.js';
+                altScript.onload = () => {
+                    const mainScript = document.createElement('script');
+                    mainScript.src = 'script.js';
+                    document.body.appendChild(mainScript);
+                };
+                document.head.appendChild(altScript);
+            };
+            socketScript.onload = () => {
+                const mainScript = document.createElement('script');
+                mainScript.src = 'script.js';
+                document.body.appendChild(mainScript);
+            };
+            document.head.appendChild(socketScript);
+        })();
+    </script>
+</body>
+</html>
+
